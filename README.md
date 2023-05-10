@@ -2,7 +2,7 @@
 Camera-based Cardiac Signal Measurement: A non-invasive application for monitoring heart activity using a camera and image processing techniques.
 
 
-![easy-rppg Logo](media/logo.jpg)
+<img src="media/logo.jpg" alt="easy-rppg Logo" width="384" height="576">
 
 
 ## Authors
