@@ -75,3 +75,28 @@ def bpm2hz(bpm:float):
     to hertz
     """
     return bpm/60
+
+def create_sinusoidal_array(array_size:tuple, duration:int, sampling_rate:int, frequency:float,
+                              amplitude:int, noise_level:float)->np.array:
+    """
+    Create a sinusoidal signal of a specified duration and then create an array for
+    each individual value. This is useful to simulate a serie of human faces with
+    a specific rppg value
+    Args:
+        duration (float): Duration of the signal in seconds.
+        sampling_rate (int): Number of samples per second.
+        frequency (float): Frequency of the sinusoidal signal in Hz.
+        amplitude (float): Amplitude of the sinusoidal signal.
+        noise_level (float): Level of additive white Gaussian noise.
+
+    Returns:
+        numpy.ndarray: Sinusoidal array with specified characteristics.
+    """
+    rppg = create_sinusoidal_signal(duration, sampling_rate, frequency, amplitude, noise_level)
+    # Reshape the original array to have a singleton dimension
+    reshaped_rppg = rppg[:, np.newaxis, np.newaxis, np.newaxis]
+
+    # Tile the reshaped array to match the desired dimension
+    faces_rppg = np.tile(reshaped_rppg, (1,) + array_size + (3,))
+
+    return faces_rppg
