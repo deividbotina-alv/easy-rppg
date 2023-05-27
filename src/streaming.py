@@ -13,7 +13,7 @@ def stream_rppg(camera_index:int, width:int, height:int, fps:int, VERBOSE:int):
     cap = cv2.VideoCapture(camera_index) # Open camera port
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, width) # Set width
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)# Set height
-    cap.set(cv2.CAP_PROP_FPS, fps) # Set camera fps
+    # cap.set(cv2.CAP_PROP_FPS, fps) # Set camera fps
 
     if VERBOSE>0:
         print(f"[INFO]: Starting streaming: [{int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))}",
@@ -22,18 +22,25 @@ def stream_rppg(camera_index:int, width:int, height:int, fps:int, VERBOSE:int):
     fps_preserver = preserve_fps(fps) # It will guarantee fps streaming
 
     # Start capturing frames from the camera
+    start_time = cv2.getTickCount()  # Add this line
     while cap.isOpened():
         with fps_preserver:
-            #start_time = time.time() # To manage stream at fps
+            # Calculate FPS
+            elapsed_ticks = cv2.getTickCount() - start_time
+            elapsed_time = elapsed_ticks / cv2.getTickFrequency()
+            fps = 1 / elapsed_time if elapsed_time > 0 else 0
+            start_time = cv2.getTickCount()  # Reset the start time
 
             ret, frame = cap.read()
             if ret == True:
+                # Draw FPS on the video frame
+                cv2.putText(frame, f"FPS: {fps:.2f}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
                 cv2.imshow("Video live", frame)
             else:
                 print("[INFO] No camera device found")
 
             if cv2.waitKey(1) & 0xFF == ord("q"):
-                    break
+                break
 
     cap.release()
     cv2.destroyAllWindows()
@@ -44,10 +51,10 @@ if __name__ == "__main__":
     print('================================================================')   
     print(time.strftime("%Y-%m-%d %H:%M:%S"))      
 
-    camera_index = 4
-    width = 1280
-    height = 720
-    fps = 10 
+    camera_index = 0
+    width = 640
+    height = 480
+    fps = 25 
     VERBOSE = 2
 
     # RUN MAIN FUNCTION
