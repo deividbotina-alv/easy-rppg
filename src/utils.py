@@ -1,11 +1,15 @@
 import time
 import numpy as np
 import matplotlib.pyplot as plt
+import cv2
+from face_detector import FaceDetector
 
-class preserve_fps:
+#%% Classes
+class PreserveFPS:
     """
-    Helper class to mantain the desired fps
+    Helper class to maintain the desired fps
     """
+
     def __init__(self, desired_fps):
         self.desired_fps = desired_fps
         self.frame_duration = 1 / desired_fps
@@ -17,11 +21,29 @@ class preserve_fps:
     def __exit__(self, exc_type, exc_value, traceback):
         elapsed_time = time.time() - self.start_time
         if elapsed_time < self.frame_duration:
-            time.sleep(self.frame_duration - elapsed_time) 
+            time.sleep(self.frame_duration - elapsed_time)
 
+#%% Functions
 
-def create_sinusoidal_signal(duration:int, sampling_rate:int, frequency:float,
-                              amplitude:int, noise_level:float)->np.array:
+def detect_face(face_detector:FaceDetector, frame):
+    if not isinstance(face_detector, FaceDetector):
+        raise TypeError("face_detector must be an instance of FaceDetector")
+        
+    faces = face_detector(frame) # Detect faces in the grayscale frame
+
+    if len(faces) > 0:
+        # Return the first detected face
+        return faces[0]
+    else:
+        return None
+
+def draw_face_rectangle(frame, face):
+    # Draw a green rectangle around the detected face
+    x, y, w, h = face
+    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)  
+
+def create_sinusoidal_signal(duration: int, sampling_rate: int, frequency: float,
+                             amplitude: int, noise_level: float) -> np.array:
     """
     Create a sinusoidal signal of a specified duration.
     Args:
@@ -48,7 +70,8 @@ def create_sinusoidal_signal(duration:int, sampling_rate:int, frequency:float,
 
     return signal_with_noise
 
-def plot_signal(signal:np.array, sampling_rate):
+
+def plot_signal(signal: np.array, sampling_rate):
     """
     Plot a signal with time on the x-axis in seconds.
 
@@ -69,19 +92,20 @@ def plot_signal(signal:np.array, sampling_rate):
     plt.grid(True)
     plt.show()
 
-def bpm2hz(bpm:float):
+
+def bpm2hz(bpm: float):
     """
-    helper function to change between beats per minute
+    Helper function to change between beats per minute
     to hertz
     """
-    return bpm/60
+    return bpm / 60
 
-def create_sinusoidal_array(array_size:tuple, duration:int, sampling_rate:int, frequency:float,
-                              amplitude:int, noise_level:float)->np.array:
+def create_sinusoidal_array(array_size: tuple, duration: int, sampling_rate: int, frequency: float,
+                            amplitude: int, noise_level: float) -> np.array:
     """
     Create a sinusoidal signal of a specified duration and then create an array for
-    each individual value. This is useful to simulate a serie of human faces with
-    a specific rppg value
+    each individual value. This is useful to simulate a series of human faces with
+    a specific rppg value.
     Args:
         duration (float): Duration of the signal in seconds.
         sampling_rate (int): Number of samples per second.
@@ -93,10 +117,8 @@ def create_sinusoidal_array(array_size:tuple, duration:int, sampling_rate:int, f
         numpy.ndarray: Sinusoidal array with specified characteristics.
     """
     rppg = create_sinusoidal_signal(duration, sampling_rate, frequency, amplitude, noise_level)
-    # Reshape the original array to have a singleton dimension
-    reshaped_rppg = rppg[:, np.newaxis, np.newaxis, np.newaxis]
+    reshaped_rppg = rppg[:, np.newaxis, np.newaxis, np.newaxis]  # Reshape the original array
 
-    # Tile the reshaped array to match the desired dimension
-    faces_rppg = np.tile(reshaped_rppg, (1,) + array_size + (3,))
+    faces_rppg = np.tile(reshaped_rppg, (1,) + array_size + (3,))  # Tile the reshaped array
 
     return faces_rppg
