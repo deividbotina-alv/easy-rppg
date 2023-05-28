@@ -1,7 +1,7 @@
 import time
 import cv2
 from utils import PreserveFPS, detect_face, draw_face_rectangle
-from face_detector import HaarCascade
+from face_detector import HaarCascade, Mediapipe
 
 def stream_rppg(camera_index: int, width: int, height: int, fps: int, face_detector: str, verbose: int):
     """
@@ -16,6 +16,8 @@ def stream_rppg(camera_index: int, width: int, height: int, fps: int, face_detec
     # Load the pre-trained face detection model
     if face_detector in ['haarcascade']:
         face_detector = HaarCascade()
+    elif face_detector in ['mediapipe']:
+        face_detector = Mediapipe()
 
     if verbose > 0:
         print(f"[INFO]: Starting streaming: [{int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))},"
@@ -61,7 +63,7 @@ if __name__ == "__main__":
     height = 480
     fps = 25
     verbose = 2
-    face_detector = 'haarcascade'
+    face_detector = 'mediapipe'#['mediapipe','haarcascade']
 
     stream_rppg(camera_index=camera_index,
                 fps=fps,

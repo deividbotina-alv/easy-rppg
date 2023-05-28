@@ -1,4 +1,6 @@
 import cv2
+import mediapipe as mp
+import numpy as np
 
 class FaceDetector:
     def __init__(self):
@@ -18,5 +20,24 @@ class HaarCascade(FaceDetector):
     def compute(self, input):
         gray = cv2.cvtColor(input, cv2.COLOR_BGR2GRAY)
         faces = self.face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+
+        return faces
+
+class Mediapipe(FaceDetector):
+    def __init__(self):
+        super().__init__()
+        self.mp_face_detection = mp.solutions.face_detection.FaceDetection(min_detection_confidence=0.5)
+        self.mp_draw = mp.solutions.drawing_utils
+
+    def compute(self, input):
+        results = self.mp_face_detection.process(input)
+
+        faces = []
+        if results.detections:
+            for detection in results.detections:
+                bbox = detection.location_data.relative_bounding_box
+                h, w, c = input.shape
+                x, y, width, height = int(bbox.xmin * w), int(bbox.ymin * h), int(bbox.width * w), int(bbox.height * h)
+                faces.append((x, y, width, height))
 
         return faces
