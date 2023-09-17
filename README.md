@@ -8,7 +8,7 @@
     <a href="PLATFORM" alt="Platform">
         <img src="https://img.shields.io/badge/platform-linux--64-lightgrey" /></a>  
     <a href="CONTRIBUTORS" alt="Contributors">
-        <img src="https://img.shields.io/badge/contributors-2-brightgreen" /></a>                
+        <img src="https://img.shields.io/badge/contributors-3-brightgreen" /></a>                
 </p>
 
 Camera-based Cardiac Signal Measurement: A non-invasive application for monitoring heart activity using a camera and image processing techniques.
