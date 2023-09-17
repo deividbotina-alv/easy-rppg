@@ -21,6 +21,7 @@ Camera-based Cardiac Signal Measurement: A non-invasive application for monitori
 
 - Deivid Johan Botina Monsalve
 - Henry Jhoán Areiza Laverde
+- Camilo Alejandro Bermúdez Mejía
 
 
 ***easy-rppg is for research purposes only, and commercial use is not allowed.***
