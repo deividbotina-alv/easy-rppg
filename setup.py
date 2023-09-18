@@ -18,7 +18,7 @@ def get_requirements(file_path:str)->List[str]:
     return requirements
 
 setup(
-name='easy-rppg',
+name='easyrppg',
 version='0.0.0',
 author='Deivid Botina, Henry Areiza, Camilo Bermúdez',
 author_email='deivid.johan.botina.monsalve@gmail.com',

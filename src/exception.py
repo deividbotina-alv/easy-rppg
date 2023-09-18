@@ -1,5 +1,5 @@
 import sys
-from src.logger import logging
+from logger import logging
 
 """
 Handle custom exceptions
@@ -24,7 +24,7 @@ class CustomException(Exception):
     
 # if __name__=="__main__":
 
-#     " Example of custom exception"
+#     # " Example of custom exception"
 #     try:
 #         a=1/0
 #     except Exception as e:
