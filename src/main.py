@@ -30,11 +30,11 @@ def rppg_from_file(file_path: str, face_detector: FaceDetector, RPPG_computer: R
     video = cv2.VideoCapture(file_path) # Open the video file
  
     if not video.isOpened(): # Check if the video file was successfully opened
-        logging.error(f"Impossible to open the file {file_path}")
-        print(f"[ERROR] Impossible to open the file {file_path}")
+        logging.error(f"Unable to open the file {file_path}")
+        print(f"[ERROR] Unable to open the file {file_path}")
         return
     else:
-        logging.info(f"Success when opening video file {file_path}")
+        logging.info(f"Successfully opened video file {file_path}")
 
     # Read and display each frame of the video
     traces = []
@@ -52,7 +52,7 @@ def rppg_from_file(file_path: str, face_detector: FaceDetector, RPPG_computer: R
             face_cropped = frame[y : y + h, x: x + w]
             traces.append(cv2.mean(face_cropped)[:3])
             if SHOW:
-                draw_face_rectangle(frame, face) # Draw green rectangle
+                draw_face_rectangle(frame, face) # Draw a green rectangle
         else:
             traces.append((np.NaN, np.NaN, np.NaN))
 
@@ -95,7 +95,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    # Show parameters for this experiment
+    # Display parameters for this experiment
     for arg in vars(args):
         print(f'{arg} : {getattr(args, arg)}')
     print('================================================================')
