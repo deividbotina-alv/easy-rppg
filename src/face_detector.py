@@ -24,9 +24,10 @@ class HaarCascade(FaceDetector):
         return faces
 
 class Mediapipe(FaceDetector):
-    def __init__(self):
+    def __init__(self, min_detection_confidence:float=0.5):
         super().__init__()
-        self.mp_face_detection = mp.solutions.face_detection.FaceDetection(min_detection_confidence=0.5)
+        self.min_detection_confidence = min_detection_confidence
+        self.mp_face_detection = mp.solutions.face_detection.FaceDetection(min_detection_confidence=self.min_detection_confidence)
         self.mp_draw = mp.solutions.drawing_utils
 
     def compute(self, input):
