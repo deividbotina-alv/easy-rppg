@@ -19,9 +19,9 @@ Camera-based Cardiac Signal Measurement: A non-invasive application for monitori
 
 ## Authors
 
-- Deivid Johan Botina Monsalve
-- Henry Jhoán Areiza Laverde
-- Camilo Alejandro Bermúdez Mejía
+- [Deivid Johan Botina Monsalve](https://linktr.ee/deividbotina?utm_source=linktree_admin_share)
+- [Henry Jhoán Areiza Laverde](https://github.com/HenryAreiza)
+- [Camilo Alejandro Bermúdez Mejía](https://github.com/camiloabermudez)
 
 
 ***easy-rppg is for research purposes only, and commercial use is not allowed.***
