@@ -1,23 +1,37 @@
 import time
 import os
+import sys
 import cv2
-from exception import CustomException
 from logger import logging
 import numpy as np
 import pandas as pd
+import argparse
 
-from face_detector import HaarCascade, Mediapipe
-from utils import PreserveFPS, detect_face, draw_face_rectangle
-from rppgs import Green, GR
+from face_detector import FaceDetector, HaarCascade, Mediapipe
+from utils import detect_face, draw_face_rectangle
+from rppgs import RPPG, Green, GR
 
-def rppg_from_file(file_path:str, face_detector, RPPG_computer, method):
+def rppg_from_file(file_path: str, face_detector: FaceDetector, RPPG_computer: RPPG, method: str, SHOW: bool):
+    """
+    Measure RPPG from a file.
+
+    Args:
+        file_path (str): Path to the file.
+        face_detector (FaceDetector): An instance of a face detection class.
+        RPPG_computer (RPPG): An instance of an RPPG measurement method class.
+        method (str): The RPPG measurement method ('Green' or 'GR').
+        SHOW (bool): Whether to show the video stream with face detection (True or False).
+
+    Returns:
+        None
+    """
     output_path = os.path.dirname(file_path)
     
     video = cv2.VideoCapture(file_path) # Open the video file
  
     if not video.isOpened(): # Check if the video file was successfully opened
-        logging.info(f"Error when opening video file {file_path}")
-        print("Error opening video file")
+        logging.error(f"Impossible to open the file {file_path}")
+        print(f"[ERROR] Impossible to open the file {file_path}")
         return
     else:
         logging.info(f"Success when opening video file {file_path}")
@@ -33,16 +47,18 @@ def rppg_from_file(file_path:str, face_detector, RPPG_computer, method):
 
         face = detect_face(face_detector, frame) # Face detection (coordinates)
         if face is not None:
-            # Get R,G,B traces from the face
+            # Get R, G, B traces from the face
             x, y, w, h = face
             face_cropped = frame[y : y + h, x: x + w]
             traces.append(cv2.mean(face_cropped)[:3])
-            draw_face_rectangle(frame, face) # Draw green rectangle
+            if SHOW:
+                draw_face_rectangle(frame, face) # Draw green rectangle
         else:
             traces.append((np.NaN, np.NaN, np.NaN))
 
-        cv2.namedWindow("Video", cv2.WINDOW_AUTOSIZE)
-        cv2.imshow("Video", frame)# Display the frame
+        if SHOW:
+            cv2.namedWindow("Video", cv2.WINDOW_AUTOSIZE)
+            cv2.imshow("Video", frame) # Display the frame
 
         # Exit if the 'q' key is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -57,9 +73,10 @@ def rppg_from_file(file_path:str, face_detector, RPPG_computer, method):
 
     # Save the RPPG signal as a CSV file
     rppg_df = pd.DataFrame({'rppg': rppg})
-    rppg_file_name = os.path.join(output_path,f'rppg_{method}.csv')
+    rppg_file_name = os.path.join(output_path, f'rppg_{method}.csv')
     rppg_df.to_csv(rppg_file_name, index=False)
-    logging.info(f"output file succesfully saved in {rppg_file_name}")
+    logging.info(f"Output file successfully saved in {rppg_file_name}")
+    print(f"[SUCCESS] Output file successfully saved in {rppg_file_name}")
 
 if __name__ == "__main__":
     print('================================================================')
@@ -67,23 +84,55 @@ if __name__ == "__main__":
     print('================================================================')
     print(time.strftime("%Y-%m-%d %H:%M:%S"))
 
-    face_detector = 'mediapipe'#['mediapipe','haarcascade']
-    method = 'Green' # ['Green', 'GR', 'POS']
+    parser = argparse.ArgumentParser(description='RPPG measurement')
+    parser.add_argument('--method', '-m', type=str, default='Green', choices=['Green', 'GR'],
+                        help='RPPG measurement method (Green, GR)')
+    parser.add_argument('--face_detector', '-fd', type=str, default='mediapipe', choices=['mediapipe', 'haarcascade'],
+                        help='Face detection method (mediapipe or haarcascade)')
+    parser.add_argument('--path', type=str, help='Path to the file (video or first enumerated image)')
+    parser.add_argument('--RT', action='store_true', help='Real-time processing mode')
+    parser.add_argument('--SHOW', action='store_true', help='Stream face detection')
+
+    args = parser.parse_args()
+
+    # Show parameters for this experiment
+    for arg in vars(args):
+        print(f'{arg} : {getattr(args, arg)}')
+    print('================================================================')
+    print('================================================================') 
+
+    if not args.RT and args.path is None:
+        logging.error("You must specify the input file path")
+        print("[ERROR]: You must specify the input file path")
+        sys.exit()
 
     # Load the pre-trained face detection model
-    if face_detector in ['haarcascade']:
+    if args.face_detector in ['haarcascade']:
         face_detector = HaarCascade()
-    elif face_detector in ['mediapipe']:
+    elif args.face_detector in ['mediapipe']:
         face_detector = Mediapipe()
 
-    if method in ['Green']:
+    # Instantiate the RPPG computer
+    if args.method in ['Green']:
         RPPG_computer = Green()
-    elif method in ['GR']:
+    elif args.method in ['GR']:
         RPPG_computer = GR()
 
+    if args.RT:
+        """
+        Real-time rppg measurement
+        """
+        logging.error(f"Real-time rppg measurement has not been implemented yet.")
+        print("[ERROR] Real-time rppg measurement has not been implemented yet.")
+        sys.exit()
 
-    RT = False # Real time
-
-    if not RT:
-        path = r'/media/dvd/DATA/repos/easy-rppg/data/p1v1s1/video.avi'
-        rppg_from_file(path, face_detector, RPPG_computer, method)
+    else:     
+        """
+        rppg measurement from file
+        """
+        logging.info(f"Measuring rppg from file")
+        rppg_from_file(file_path=args.path,
+                        face_detector=face_detector,
+                        RPPG_computer=RPPG_computer,
+                        method=args.method,
+                        SHOW=args.SHOW)

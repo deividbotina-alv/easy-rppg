@@ -6,6 +6,7 @@ __pycache__/
 # Data
 data/
 src_old/
+.vscode/
 
 # C extensions
 *.so
