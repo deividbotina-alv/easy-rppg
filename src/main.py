@@ -85,13 +85,13 @@ if __name__ == "__main__":
     print(time.strftime("%Y-%m-%d %H:%M:%S"))
 
     parser = argparse.ArgumentParser(description='RPPG measurement')
-    parser.add_argument('--method', '-m', type=str, default='Green', choices=['Green', 'GR'],
+    parser.add_argument('--method', '-m', type=str, default='Green', choices=['Green', 'GR'], required=True,
                         help='RPPG measurement method (Green, GR)')
     parser.add_argument('--face_detector', '-fd', type=str, default='mediapipe', choices=['mediapipe', 'haarcascade'],
-                        help='Face detection method (mediapipe or haarcascade)')
-    parser.add_argument('--path', type=str, help='Path to the file (video or first enumerated image)')
-    parser.add_argument('--RT', action='store_true', help='Real-time processing mode')
-    parser.add_argument('--SHOW', action='store_true', help='Stream face detection')
+                        required=True, help='Face detection method (mediapipe or haarcascade)')
+    parser.add_argument('--path', '-p', type=str, help='Path to the file (video or first enumerated image)')
+    parser.add_argument('--RT', '-r', action='store_true', help='Real-time processing mode')
+    parser.add_argument('--SHOW', '-s', action='store_true', help='Stream face detection')
 
     args = parser.parse_args()
 
