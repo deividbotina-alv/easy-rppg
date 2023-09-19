@@ -1,14 +1,17 @@
 import time
+import os
 import cv2
 from exception import CustomException
 from logger import logging
 import numpy as np
+import pandas as pd
 
 from face_detector import HaarCascade, Mediapipe
 from utils import PreserveFPS, detect_face, draw_face_rectangle
 from rppgs import Green, GR
 
-def rppg_from_file(file_path:str, face_detector, RPPG_computer):
+def rppg_from_file(file_path:str, face_detector, RPPG_computer, method):
+    output_path = os.path.dirname(file_path)
     
     video = cv2.VideoCapture(file_path) # Open the video file
  
@@ -51,8 +54,12 @@ def rppg_from_file(file_path:str, face_detector, RPPG_computer):
 
     # RPPG measurement
     rppg = RPPG_computer(traces)
-    import matplotlib.pyplot as plt
-    plt.figure(); plt.plot(rppg)
+
+    # Save the RPPG signal as a CSV file
+    rppg_df = pd.DataFrame({'rppg': rppg})
+    rppg_file_name = os.path.join(output_path,f'rppg_{method}.csv')
+    rppg_df.to_csv(rppg_file_name, index=False)
+    logging.info(f"output file succesfully saved in {rppg_file_name}")
 
 if __name__ == "__main__":
     print('================================================================')
@@ -79,4 +86,4 @@ if __name__ == "__main__":
 
     if not RT:
         path = r'/media/dvd/DATA/repos/easy-rppg/data/p1v1s1/video.avi'
-        rppg_from_file(path, face_detector, RPPG_computer)
+        rppg_from_file(path, face_detector, RPPG_computer, method)
